@@ -11,11 +11,13 @@
 
     <p>An example of <code>&lt;ee-status-button&gt;</code>:</p>
 
+    <p><code>hide-if-not-fail = true</code></p>
     <ee-status-button raised hide-if-not-fail
       title="Edit emergency profile"
       fail-title="Emergency profile missing">
     </ee-status-button>
 
+    <p><code>hide-if-not-fail = false</code></p>
     <ee-status-button
       title="Edit emergency profile"
       fail-title="Emergency profile missing">
@@ -26,10 +28,12 @@
     </div>
 
     <script>
-      var seedElement = document.querySelector('ee-status-button');
+      var seedElements = document.querySelectorAll('ee-status-button');
 
       document.querySelector('#changeBtn').addEventListener('click', function() {
-        seedElement.fail = !seedElement.fail;
+        for (var i = seedElements.length - 1; i >= 0; i--) {
+          seedElements[i].fail = !seedElements[i].fail;
+        }
       });
     </script>
 
