@@ -1,0 +1,287 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-behaviors/paper-button-behavior.html">
+<link rel="import" href="../paper-material/paper-material-shared-styles.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<!--
+
+`ee-status-button` is a button which displays different icons and titles for fail states = true/false
+
+Example:
+
+    <ee-status-button></ee-status-button>
+
+Button titles:
+
+    <ee-status-button raised fail
+      title="Edit emergency profile"
+      fail-title="Emergency profile missing">
+    </ee-status-button>
+
+### Styling
+
+The following custom properties and mixins are also available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--ee-status-button-ink-color` | Background color of the ripple | `Based on the button's color`
+`--ee-status-button-icon` | Mixin applied to the icon | `{}`
+`--ee-status-button-icon-fail` | Mixin applied to the icon when fail=true | `{}`
+`--ee-status-button` | Mixin applied to the button | `{}`
+`--ee-status-button-icon-container-color` | icon container when fail=false| `{}`
+`--ee-status-button-icon-container-color-fail` | Icon color when fail=true | `{}`
+`--ee-status-button-icon-container` | Mixin applied to the icon container when fail=false | `{}`
+`--ee-status-button-icon-container-fail` | Mixin applied to the icon container when fail=true | `{}`
+`--ee-status-button-disabled` | Mixin applied to the disabled button. Note that you can also use the `ee-status-button[disabled]` selector | `{}`
+`--ee-status-button-flat-keyboard-focus` | Mixin applied to a flat button after it's been focused using the keyboard | `{}`
+`--ee-status-button-raised-keyboard-focus` | Mixin applied to a raised button after it's been focused using the keyboard | `{}`
+
+@demo demo/index.html
+-->
+
+<dom-module id="ee-status-button">
+  <template strip-whitespace>
+    <style include="paper-material-shared-styles">
+      :host {
+        @apply(--layout-inline);
+        @apply(--layout-center-center);
+        position: relative;
+        box-sizing: border-box;
+        min-width: 5.14em;
+        margin: 0 0.29em;
+        background: transparent;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
+        font: inherit;
+        outline-width: 0;
+        border-radius: 3px;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        cursor: pointer;
+        z-index: 0;
+        padding: 0.7em 0.57em;
+
+        opacity: 1;
+       transition: opacity 1s ease-in-out;
+       -moz-transition: opacity 1s ease-in-out;
+       -webkit-transition: opacity 1s ease-in-out;
+
+        @apply(--paper-font-common-base);
+        @apply(--ee-status-button);
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      :host([raised].keyboard-focus) {
+        font-weight: bold;
+        @apply(--ee-status-button-raised-keyboard-focus);
+      }
+
+      :host(:not([raised]).keyboard-focus) {
+        font-weight: bold;
+        @apply(--ee-status-button-flat-keyboard-focus);
+      }
+
+      :host([disabled]) {
+        background: #eaeaea;
+        color: #a8a8a8;
+        cursor: auto;
+        pointer-events: none;
+
+        @apply(--ee-status-button-disabled);
+      }
+
+      :host([animated]) {
+        @apply(--shadow-transition);
+      }
+
+      paper-ripple {
+        color: var(--ee-status-button-ink-color);
+      }
+
+      .space {
+        @apply(--layout-flex);
+      }
+
+      #iconContainer {
+        position: relative;
+        top: -6px;
+        right: -6px;
+        margin-left: 12px;
+        padding: 2px;
+        border-radius: 50%;
+        background-color: var(--ee-status-button-icon-container-color, green);
+        @apply(--ee-status-button-icon-container);
+      }
+
+      #iconContainer.fail {
+        top: 0;
+        right: 0;
+        background-color: var(--ee-status-button-icon-container-color-fail, red);
+        @apply(--ee-status-button-icon-container-fail);
+      }
+
+      .icon {
+        color: #fff;
+        --iron-icon-height: 18px;
+        --iron-icon-width: 18px;
+        @apply(--ee-status-button-icon);
+      }
+
+      .icon.fail {
+        --iron-icon-height: 24px;
+        --iron-icon-width: 24px;
+        @apply(--ee-status-button-icon-fail);
+      }
+
+      #title {
+        @apply(--ee-status-button-title);
+      }
+
+      #title.fail {
+        @apply(--ee-status-button-title-fail);
+      }
+
+    </style>
+
+    <content></content>
+    <span id="title">[[_title]]</span>
+    <span class="space"></span>
+    <span id="iconContainer">
+      <template is="dom-if" if=[[fail]]>
+        <iron-icon id="icon" class="icon fail" icon$="[[_icon]]"></iron-icon>
+      </template>
+      <template is="dom-if" if=[[!fail]]>
+        <iron-icon id="icon" class="icon" icon$="[[_icon]]"></iron-icon>
+      </template>
+    </span>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'ee-status-button',
+
+      behaviors: [
+        Polymer.PaperButtonBehavior
+      ],
+
+      properties: {
+
+        /**
+         * The button title which should be displayed if fail=false.
+         */
+        icon: {
+          type: String,
+          value: 'icons:check',
+          notify: true
+        },
+
+        /**
+         * The button icon which should be displayed if fail=true.
+         */
+        failIcon: {
+          type: String,
+          value: 'icons:close',
+          notify: true
+        },
+
+        _icon: {
+          type: String,
+          computed: '_computeIconName(icon, failIcon, fail)'
+        },
+
+        /**
+         * If the fail status should be active.
+         */
+        fail: {
+          type: Boolean,
+          value: false,
+          observer: '_failChanged'
+        },
+
+        /**
+         * Hides the button if fail=false.
+         */
+        hideIfNotFail: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * The button title which should be displayed if fail=true.
+         */
+        failTitle: {
+          type: String,
+          value: '',
+          notify: true
+        },
+
+        /**
+         * The button title which should be displayed if fail=false.
+         */
+        title: {
+          type: String,
+          value: '',
+          notify: true
+        },
+
+        _title: {
+          type: String,
+          computed: '_computeTitle(title, failTitle, fail)',
+          notify: true
+        },
+
+        /**
+         * If true, the button should be styled with a shadow.
+         */
+        raised: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false,
+          observer: '_calculateElevation'
+        }
+      },
+
+      attached: function() {
+        this._failChanged();
+      },
+
+      _computeIconName(icon, failIcon, fail) {
+        return fail ? failIcon : icon;
+      },
+
+      _computeTitle: function(title, failTitle, fail) {
+        return fail ? failTitle : title;
+      },
+
+      _calculateElevation: function() {
+        if (!this.raised) {
+          this._setElevation(0);
+        } else {
+          Polymer.PaperButtonBehaviorImpl._calculateElevation.apply(this);
+        }
+      },
+
+      _failChanged: function() {
+        if (this.fail) {
+          this.hidden = false;
+          this.$.iconContainer.classList.add('fail');
+          this.$.title.classList.add('fail');
+        } else {
+          if (this.hideIfNotFail) {
+            this.hidden = true;
+          }
+          this.$.iconContainer.classList.remove('fail');
+          this.$.title.classList.remove('fail');
+        }
+      },
+
+    });
+  </script>
+</dom-module>
