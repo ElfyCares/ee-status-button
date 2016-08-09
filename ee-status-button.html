@@ -115,19 +115,27 @@ Custom property | Description | Default
         margin-left: 12px;
         padding: 2px;
         border-radius: 50%;
-        background-color: var(--ee-status-button-icon-container-color, green);
+        background-color: var(--ee-status-button-icon-container-color, #72d572);
+        height: 4.5vw;
+        width: 4.5vw;
+        max-width: 26px;
+        max-height: 26px;
+        text-align: center;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
         @apply(--ee-status-button-icon-container);
       }
 
       #iconContainer.fail {
         top: 0;
         right: 0;
-        background-color: var(--ee-status-button-icon-container-color-fail, red);
+        background-color: var(--ee-status-button-icon-container-color-fail, #f46f5a);
         @apply(--ee-status-button-icon-container-fail);
       }
 
       .icon {
         color: #fff;
+        margin: 0 auto;
         --iron-icon-height: 18px;
         --iron-icon-width: 18px;
         @apply(--ee-status-button-icon);
